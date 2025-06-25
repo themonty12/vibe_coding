@@ -1,5 +1,8 @@
 """
 FastAPI 메인 애플리케이션
+
+GitHub Actions 자동화 테스트를 위한 간단한 수정
+이 수정으로 PR 자동화 기능들을 테스트합니다.
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

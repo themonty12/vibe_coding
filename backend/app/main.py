@@ -35,7 +35,8 @@ async def root():
 @app.get("/health")
 async def health_check():
     """Health check 엔드포인트"""
-    return {"status": "healthy", "version": settings.app_version}
+    # 의도적인 버그: 잘못된 문법 (괄호 누락)
+    return {"status": "healthy", "version": settings.app_version
 
 
 @app.get("/api/info")

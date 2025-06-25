@@ -1,0 +1,89 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# TASK-003 개발 계획
+
+TASK-003은 LangGraph Agent 구현을 위한 상세한 개발 계획입니다.
+
+## 구현 항목
+
+- React Agent 설정 및 구성
+- Gemini LLM 연동 및 설정
+- DuckDuckGo Search Tool 통합
+- 단일 턴 대화 처리 시스템
+- 상품 검색 결과 생성 기능
+- Agent 실행 및 응답 처리
+
+## 기술 스택 및 라이브러리
+
+### LangGraph Framework
+- **LangGraph**: 언어 에이전트 그래프 구축 프레임워크
+- **create_react_agent**: Pre-built React Agent 생성
+- **Agent State**: 메시지 상태 관리
+- **Tool Integration**: 외부 도구 연동 지원
+
+### LLM 연동
+- **Gemini 2.5-flash-preview-05-20**: Google Gemini 모델
+- **langchain_google_genai**: Gemini 모델 연동 라이브러리
+- **Tool Binding**: 모델과 도구 바인딩
+
+### Search Tool
+- **duckduckgo_search**: DuckDuckGo 검색 API
+- **DDGS 클래스**: 검색 인터페이스
+- **text() 메서드**: 텍스트 검색 기능
+- **langchain_community.tools**: DuckDuckGo 도구 래퍼
+
+### 모니터링 및 디버깅
+- **LangSmith**: 에이전트 실행 추적
+- **환경 변수**: LANGSMITH_API_KEY 설정
+
+## 개발 계획
+
+1. **환경 설정 및 의존성 구성**
+   - LangGraph 설치 및 설정
+   - Gemini API 키 환경 변수 설정
+   - LangSmith 모니터링 설정
+
+2. **DuckDuckGo Search Tool 구현**
+   - DuckDuckGo 검색 도구 클래스 생성
+   - 상품 검색에 최적화된 쿼리 처리
+   - 검색 결과 포매팅 및 정리
+
+3. **Gemini LLM 모델 설정**
+   - ChatGoogleGenerativeAI 모델 초기화
+   - 모델 파라미터 설정 (temperature, max_tokens)
+   - Tool과 모델 바인딩
+
+4. **React Agent 구성**
+   - create_react_agent를 사용한 에이전트 생성
+   - 도구 리스트 설정
+   - 시스템 프롬프트 정의
+
+5. **Agent State 및 메시지 처리**
+   - AgentState 클래스 정의
+   - 메시지 히스토리 관리
+   - 단일 턴 처리 로직
+
+6. **상품 검색 기능 구현**
+   - 사용자 쿼리 분석
+   - 검색 키워드 최적화
+   - 검색 결과 요약 및 포매팅
+
+7. **API 엔드포인트 통합**
+   - FastAPI 라우터에 Agent 연동
+   - 요청/응답 처리
+   - 에러 핸들링
+
+8. **성능 최적화**
+   - 응답 시간 최적화
+   - 메모리 사용량 모니터링
+   - 에러 재시도 로직
+
+9. **문서화 및 로깅**
+    - 코드 주석 및 문서화
+    - 로깅 시스템 구현
+    - 디버깅 정보 출력
+
+

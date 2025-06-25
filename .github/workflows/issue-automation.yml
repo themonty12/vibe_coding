@@ -1,0 +1,228 @@
+name: Issue Automation
+
+on:
+  issues:
+    types: [opened, edited, labeled, assigned]
+
+jobs:
+  issue-comment:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'
+    steps:
+      - name: Comment on new issue
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🐛 **이슈가 생성되었습니다!**
+              
+              안녕하세요 @${{ github.event.issue.user.login }}님! 이슈를 생성해주셔서 감사합니다.
+              
+              ## 처리 프로세스
+              1. 🏷️ 적절한 라벨이 자동으로 추가됩니다
+              2. 👥 담당자가 자동으로 할당됩니다
+              3. 🔍 이슈가 검토되고 우선순위가 설정됩니다
+              
+              ## 이슈 상태
+              - **생성됨**: 이슈가 접수되었습니다
+              - **진행중**: 담당자가 작업을 시작했습니다
+              - **완료**: 이슈가 해결되었습니다
+              
+              ## 도움이 필요하신가요?
+              - 추가 정보가 필요하시면 언제든 댓글로 알려주세요
+              - 급한 이슈인 경우 \`critical\` 라벨을 추가해주세요
+              
+              빠른 시일 내에 확인하여 처리하겠습니다! 🚀`
+            })
+
+  issue-assign:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'
+    steps:
+      - name: Auto assign issue
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const assignees = [];
+            const title = context.payload.issue.title.toLowerCase();
+            const body = context.payload.issue.body?.toLowerCase() || '';
+            const labels = context.payload.issue.labels.map(label => label.name.toLowerCase());
+            
+            // 이슈 내용에 따른 자동 할당 로직
+            
+            // 백엔드 관련 이슈
+            if (title.includes('backend') || body.includes('backend') || 
+                title.includes('api') || body.includes('api') ||
+                title.includes('server') || body.includes('server')) {
+              // 백엔드 개발자들을 여기에 추가 (실제 GitHub 사용자명으로 변경)
+              // assignees.push('backend-lead', 'backend-developer');
+            }
+            
+            // 프론트엔드 관련 이슈
+            if (title.includes('frontend') || body.includes('frontend') ||
+                title.includes('ui') || body.includes('ui') ||
+                title.includes('ux') || body.includes('ux')) {
+              // 프론트엔드 개발자들을 여기에 추가 (실제 GitHub 사용자명으로 변경)
+              // assignees.push('frontend-lead', 'frontend-developer');
+            }
+            
+            // 문서 관련 이슈
+            if (title.includes('docs') || body.includes('docs') ||
+                title.includes('documentation') || body.includes('documentation') ||
+                title.includes('readme') || body.includes('readme')) {
+              // 문서 담당자를 여기에 추가 (실제 GitHub 사용자명으로 변경)
+              // assignees.push('docs-maintainer');
+            }
+            
+            // 버그 관련 이슈
+            if (title.includes('bug') || body.includes('bug') ||
+                title.includes('error') || body.includes('error') ||
+                title.includes('fix') || body.includes('fix')) {
+              // QA 팀이나 버그 담당자를 여기에 추가 (실제 GitHub 사용자명으로 변경)
+              // assignees.push('qa-lead', 'bug-triager');
+            }
+            
+            // 이슈 작성자를 기본 assignee로 추가
+            assignees.push(context.payload.issue.user.login);
+            
+            // Assignee 할당
+            if (assignees.length > 0) {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                assignees: [...new Set(assignees)] // 중복 제거
+              });
+            }
+
+  issue-labeler:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'
+    steps:
+      - name: Auto label issue
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const labels = [];
+            const title = context.payload.issue.title.toLowerCase();
+            const body = context.payload.issue.body?.toLowerCase() || '';
+            
+            // 이슈 타입에 따른 라벨링
+            if (title.includes('bug') || body.includes('bug') ||
+                title.includes('error') || body.includes('error') ||
+                title.includes('broken') || body.includes('broken')) {
+              labels.push('bug');
+            }
+            
+            if (title.includes('feature') || body.includes('feature') ||
+                title.includes('enhancement') || body.includes('enhancement') ||
+                title.includes('improve') || body.includes('improve')) {
+              labels.push('enhancement');
+            }
+            
+            if (title.includes('question') || body.includes('question') ||
+                title.includes('help') || body.includes('help') ||
+                title.includes('how to') || body.includes('how to')) {
+              labels.push('question');
+            }
+            
+            if (title.includes('docs') || body.includes('docs') ||
+                title.includes('documentation') || body.includes('documentation') ||
+                title.includes('readme') || body.includes('readme')) {
+              labels.push('documentation');
+            }
+            
+            // 컴포넌트별 라벨링
+            if (title.includes('backend') || body.includes('backend') ||
+                title.includes('api') || body.includes('api') ||
+                title.includes('server') || body.includes('server')) {
+              labels.push('backend');
+            }
+            
+            if (title.includes('frontend') || body.includes('frontend') ||
+                title.includes('ui') || body.includes('ui') ||
+                title.includes('ux') || body.includes('ux')) {
+              labels.push('frontend');
+            }
+            
+            // 우선순위 라벨링
+            if (title.includes('critical') || body.includes('critical') ||
+                title.includes('urgent') || body.includes('urgent') ||
+                title.includes('emergency') || body.includes('emergency')) {
+              labels.push('priority/critical');
+            } else if (title.includes('high priority') || body.includes('high priority') ||
+                       title.includes('important') || body.includes('important')) {
+              labels.push('priority/high');
+            } else if (title.includes('low priority') || body.includes('low priority') ||
+                       title.includes('nice to have') || body.includes('nice to have')) {
+              labels.push('priority/low');
+            } else {
+              labels.push('priority/medium');
+            }
+            
+            // 언어별 라벨링
+            if (title.includes('python') || body.includes('python') ||
+                title.includes('.py') || body.includes('.py')) {
+              labels.push('python');
+            }
+            
+            if (title.includes('javascript') || body.includes('javascript') ||
+                title.includes('js') || body.includes('js') ||
+                title.includes('.js') || body.includes('.js')) {
+              labels.push('javascript');
+            }
+            
+            // 기본 라벨 추가
+            labels.push('needs-triage');
+            
+            // 라벨 적용
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: [...new Set(labels)] // 중복 제거
+              });
+            }
+
+  issue-priority-comment:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'labeled' && contains(github.event.label.name, 'priority/critical')
+    steps:
+      - name: Comment on critical issue
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🚨 **긴급 이슈로 분류되었습니다!**
+              
+              이 이슈는 \`critical\` 우선순위로 분류되어 즉시 처리가 필요합니다.
+              
+              ## 처리 절차
+              1. 담당자가 즉시 확인합니다
+              2. 24시간 내 초기 분석을 완료합니다
+              3. 해결 계획을 수립하고 일정을 공유합니다
+              
+              ## 알림
+              관련 팀원들에게 알림이 전송되었습니다.
+              
+              추가 정보가 필요하시면 언제든 댓글로 알려주세요! ⚡`
+            })
+
+  issue-stale-check:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'
+    steps:
+      - name: Add to project board
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // 30일 후 stale 체크를 위한 reminder 설정
+            // 실제 구현에서는 scheduled workflow를 별도로 만들어 처리하는 것이 좋습니다
+            console.log('이슈가 생성되었습니다. 30일 후 stale 체크 대상이 됩니다.'); 

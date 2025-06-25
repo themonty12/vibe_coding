@@ -1,0 +1,87 @@
+name: Mark stale issues and pull requests
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # 매일 자정에 실행
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v8
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          
+          # 이슈 설정
+          stale-issue-message: |
+            🕰️ **이 이슈는 30일 동안 활동이 없어 stale로 표시됩니다**
+            
+            안녕하세요! 이 이슈는 30일 동안 활동이 없어 자동으로 stale로 표시되었습니다.
+            
+            ## 다음 액션
+            - 이슈가 여전히 유효하다면 댓글을 남겨주세요
+            - 7일 내에 활동이 없으면 자동으로 닫힙니다
+            - 언제든 이슈를 다시 열 수 있습니다
+            
+            감사합니다! 🙏
+            
+          close-issue-message: |
+            🔒 **이 이슈는 비활성으로 인해 자동으로 닫혔습니다**
+            
+            이 이슈는 37일 동안 활동이 없어 자동으로 닫혔습니다.
+            
+            ## 이슈 재개방
+            - 이슈가 여전히 유효하다면 언제든 다시 열어주세요
+            - 새로운 정보가 있다면 새 이슈를 생성해주세요
+            
+            감사합니다! 🙏
+            
+          # PR 설정  
+          stale-pr-message: |
+            🕰️ **이 PR은 30일 동안 활동이 없어 stale로 표시됩니다**
+            
+            안녕하세요! 이 PR은 30일 동안 활동이 없어 자동으로 stale로 표시되었습니다.
+            
+            ## 다음 액션
+            - PR이 여전히 유효하다면 댓글을 남기거나 업데이트해주세요
+            - 7일 내에 활동이 없으면 자동으로 닫힙니다
+            - 언제든 PR을 다시 열 수 있습니다
+            
+            감사합니다! 🙏
+            
+          close-pr-message: |
+            🔒 **이 PR은 비활성으로 인해 자동으로 닫혔습니다**
+            
+            이 PR은 37일 동안 활동이 없어 자동으로 닫혔습니다.
+            
+            ## PR 재개방
+            - PR이 여전히 유효하다면 언제든 다시 열어주세요
+            - 최신 변경사항으로 새 PR을 생성해주세요
+            
+            감사합니다! 🙏
+            
+          # 타이밍 설정
+          days-before-stale: 30      # 30일 후 stale 표시
+          days-before-close: 7       # stale 표시 후 7일 후 닫기
+          
+          # 라벨 설정
+          stale-issue-label: 'stale'
+          stale-pr-label: 'stale'
+          
+          # 제외할 라벨 (이 라벨이 있으면 stale 처리하지 않음)
+          exempt-issue-labels: 'pinned,security,priority/critical,priority/high'
+          exempt-pr-labels: 'pinned,security,work-in-progress'
+          
+          # 제외할 assignees (이 사용자가 할당되면 stale 처리하지 않음)
+          exempt-assignees: 'dependabot'
+          
+          # 기타 설정
+          remove-stale-when-updated: true  # 업데이트되면 stale 라벨 제거
+          delete-branch: false             # 브랜치 삭제하지 않음
+          
+          # 디버그 모드 (필요시 활성화)
+          debug-only: false 

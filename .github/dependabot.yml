@@ -1,0 +1,90 @@
+version: 2
+updates:
+  # Python 의존성 (루트 디렉토리)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    target-branch: "develop"
+    reviewers:
+      - "your-github-username"  # 실제 GitHub 사용자명으로 변경
+    assignees:
+      - "your-github-username"  # 실제 GitHub 사용자명으로 변경
+    labels:
+      - "dependencies"
+      - "python"
+      - "auto-update"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    open-pull-requests-limit: 5
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+
+  # Backend Python 의존성
+  - package-ecosystem: "pip"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    target-branch: "develop"
+    reviewers:
+      - "your-github-username"  # 실제 GitHub 사용자명으로 변경
+    assignees:
+      - "your-github-username"  # 실제 GitHub 사용자명으로 변경
+    labels:
+      - "dependencies"
+      - "backend"
+      - "python"
+      - "auto-update"
+    commit-message:
+      prefix: "chore(backend)"
+      include: "scope"
+    open-pull-requests-limit: 3
+
+  # Frontend Python 의존성
+  - package-ecosystem: "pip"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    target-branch: "develop"
+    reviewers:
+      - "your-github-username"  # 실제 GitHub 사용자명으로 변경
+    assignees:
+      - "your-github-username"  # 실제 GitHub 사용자명으로 변경
+    labels:
+      - "dependencies"
+      - "frontend"
+      - "python"
+      - "auto-update"
+    commit-message:
+      prefix: "chore(frontend)"
+      include: "scope"
+    open-pull-requests-limit: 3
+
+  # GitHub Actions 워크플로우 의존성
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    target-branch: "develop"
+    reviewers:
+      - "your-github-username"  # 실제 GitHub 사용자명으로 변경
+    assignees:
+      - "your-github-username"  # 실제 GitHub 사용자명으로 변경
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "auto-update"
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"
+    open-pull-requests-limit: 2 

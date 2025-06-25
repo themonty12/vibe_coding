@@ -1,0 +1,73 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# TASK-002: FastAPI 백엔드 기본 구조 구현 개발 계획
+
+## 구현 항목
+
+### 주요 기능
+- FastAPI 서버 기본 구조 설정
+- API 엔드포인트 스켈레톤 구현
+- Chat API 구현 (동기 방식, 스트리밍 없음)
+- API 라우터 구조 설정
+- 기본 설정 및 환경 변수 관리
+
+### 세부 구현 사항
+- FastAPI 애플리케이션 인스턴스 생성
+- API 라우팅 구조 구현
+- 채팅 메시지 처리 엔드포인트
+- 상태 확인 (Health Check) 엔드포인트
+
+## 기술 스택 및 라이브러리
+
+### 백엔드 프레임워크
+- **FastAPI**: 고성능 웹 API 프레임워크
+- **uvicorn**: ASGI 서버 (개발 및 운영)
+
+### 주요 라이브러리
+- **fastapi**: 메인 웹 프레임워크
+- **uvicorn**: ASGI 서버
+- **pydantic**: 데이터 검증 및 설정 관리
+- **python-dotenv**: 환경 변수 관리
+
+### HTTP 및 CORS 설정
+- **starlette**: FastAPI 기반 ASGI 미들웨어
+
+## 개발 계획
+
+### 1. FastAPI 애플리케이션 기본 설정
+- FastAPI 인스턴스 생성 및 기본 설정
+- 환경 변수 설정 구조 구축
+
+### 2. 프로젝트 구조 정리
+- [main.py](mdc:backend/app/main.py) 메인 애플리케이션 파일 구성
+- [config/settings.py](mdc:backend/app/config/settings.py) 설정 파일 구성
+- 라우터 폴더 구조 설정
+
+### 3. 기본 API 엔드포인트 구현
+- 루트 경로 (`/`) 상태 확인 엔드포인트
+- Health check 엔드포인트 (`/health`)
+- API 버전 정보 엔드포인트
+
+### 4. Chat API 라우터 구현
+- Chat 관련 API 라우터 생성
+- 메시지 전송 엔드포인트 (`/api/chat`)
+- 동기 방식 메시지 처리 로직
+
+### 5. 에러 핸들링 및 응답 구조
+- 표준 API 응답 모델 정의
+- HTTP 상태 코드 관리
+
+### 6. API 문서화 설정
+- FastAPI 자동 문서화 설정
+- Swagger UI 및 ReDoc 설정
+- API 스키마 최적화
+
+### 7. 개발 환경 설정
+- 개발용 서버 실행 스크립트
+- 환경 변수 템플릿 작성
+- 로깅 설정
+
+

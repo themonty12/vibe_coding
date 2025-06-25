@@ -1,0 +1,184 @@
+name: Sync Labels
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/labels.yml'
+      - '.github/workflows/labels.yml'
+  workflow_dispatch:
+
+jobs:
+  sync-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Create Labels Configuration
+        run: |
+          cat > .github/labels.yml << 'EOF'
+          # 우선순위 라벨
+          - name: "priority/critical"
+            color: "d73a4a"
+            description: "Critical priority - 즉시 처리 필요"
+          
+          - name: "priority/high"
+            color: "f1c40f"
+            description: "High priority - 높은 우선순위"
+          
+          - name: "priority/medium"
+            color: "2ecc71"
+            description: "Medium priority - 보통 우선순위"
+          
+          - name: "priority/low"
+            color: "95a5a6"
+            description: "Low priority - 낮은 우선순위"
+
+          # 타입 라벨
+          - name: "bug"
+            color: "d73a4a"
+            description: "Something isn't working"
+
+          - name: "enhancement"
+            color: "a2eeef"
+            description: "New feature or request"
+
+          - name: "question"
+            color: "d876e3"
+            description: "Further information is requested"
+
+          - name: "documentation"
+            color: "0075ca"
+            description: "Improvements or additions to documentation"
+
+          - name: "help wanted"
+            color: "008672"
+            description: "Extra attention is needed"
+
+          - name: "good first issue"
+            color: "7057ff"
+            description: "Good for newcomers"
+
+          # 컴포넌트 라벨
+          - name: "backend"
+            color: "1d76db"
+            description: "Backend related issues/PRs"
+
+          - name: "frontend"
+            color: "c5def5"
+            description: "Frontend related issues/PRs"
+
+          - name: "database"
+            color: "b60205"
+            description: "Database related issues/PRs"
+
+          - name: "api"
+            color: "fbca04"
+            description: "API related issues/PRs"
+
+          # 언어 라벨
+          - name: "python"
+            color: "3776ab"
+            description: "Python related"
+
+          - name: "javascript"
+            color: "f7df1e"
+            description: "JavaScript related"
+
+          # 상태 라벨
+          - name: "needs-triage"
+            color: "ffffff"
+            description: "Needs to be triaged"
+
+          - name: "in-progress"
+            color: "0e8a16"
+            description: "Currently being worked on"
+
+          - name: "blocked"
+            color: "b60205"
+            description: "Blocked by other issues"
+
+          - name: "stale"
+            color: "fef2c0"
+            description: "No activity for 30 days"
+
+          # PR 크기 라벨
+          - name: "size/XS"
+            color: "00ff00"
+            description: "Extra small PR (< 10 lines changed)"
+
+          - name: "size/S"
+            color: "7cfc00"
+            description: "Small PR (< 30 lines changed)"
+
+          - name: "size/M"
+            color: "ffff00"
+            description: "Medium PR (< 100 lines changed)"
+
+          - name: "size/L"
+            color: "ffa500"
+            description: "Large PR (< 500 lines changed)"
+
+          - name: "size/XL"
+            color: "ff0000"
+            description: "Extra large PR (>= 500 lines changed)"
+
+          # 특수 라벨
+          - name: "dependencies"
+            color: "0366d6"
+            description: "Pull requests that update a dependency file"
+
+          - name: "auto-update"
+            color: "ff6b6b"
+            description: "Automatically created update"
+
+          - name: "security"
+            color: "d73a4a"
+            description: "Security related"
+
+          - name: "performance"
+            color: "fbca04"
+            description: "Performance related"
+
+          - name: "refactor"
+            color: "e99695"
+            description: "Code refactoring"
+
+          - name: "test"
+            color: "0e8a16"
+            description: "Test related"
+
+          - name: "chore"
+            color: "fef2c0"
+            description: "Maintenance tasks"
+
+          - name: "pinned"
+            color: "0052cc"
+            description: "Pinned issue/PR - won't go stale"
+
+          - name: "work-in-progress"
+            color: "fbca04"
+            description: "Work in progress - not ready for review"
+
+          - name: "duplicate"
+            color: "cfd3d7"
+            description: "This issue or pull request already exists"
+
+          - name: "invalid"
+            color: "e4e669"
+            description: "This doesn't seem right"
+
+          - name: "wontfix"
+            color: "ffffff"
+            description: "This will not be worked on"
+          EOF
+
+      - name: Sync labels
+        uses: micnncim/action-label-syncer@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          manifest: .github/labels.yml
+          repository: ${{ github.repository }}
+          prune: false  # 기존 라벨 삭제하지 않음 

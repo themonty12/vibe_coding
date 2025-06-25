@@ -1,0 +1,222 @@
+name: PR Automation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  pr-comment:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'
+    steps:
+      - name: Comment on PR
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🎉 **PR이 생성되었습니다!**
+              
+              안녕하세요 @${{ github.event.pull_request.user.login }}님! PR을 생성해주셔서 감사합니다.
+              
+              ## 체크리스트
+              - [ ] 테스트 코드가 작성되었나요?
+              - [ ] 코드 리뷰를 받았나요?
+              - [ ] 문서가 업데이트되었나요?
+              - [ ] 모든 테스트가 통과했나요?
+              
+              ## 다음 단계
+              1. CI/CD 파이프라인이 자동으로 실행됩니다
+              2. 코드 리뷰어가 자동으로 할당됩니다
+              3. 적절한 라벨이 자동으로 추가됩니다
+              
+              리뷰 완료 후 머지가 가능합니다. 궁금한 점이 있으시면 언제든 문의해주세요! 🚀`
+            })
+
+  pr-assign:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'
+    steps:
+      - name: Auto assign reviewers
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const assignees = [];
+            const reviewers = [];
+            
+            // 파일 경로에 따른 리뷰어 할당 로직
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+            
+            const changedFiles = files.map(file => file.filename);
+            
+            // 백엔드 파일 변경 시
+            if (changedFiles.some(file => file.startsWith('backend/'))) {
+              // backend 개발자들을 여기에 추가 (실제 GitHub 사용자명으로 변경)
+              // reviewers.push('backend-developer1', 'backend-developer2');
+            }
+            
+            // 프론트엔드 파일 변경 시
+            if (changedFiles.some(file => file.startsWith('frontend/'))) {
+              // frontend 개발자들을 여기에 추가 (실제 GitHub 사용자명으로 변경)
+              // reviewers.push('frontend-developer1', 'frontend-developer2');
+            }
+            
+            // 문서 파일 변경 시
+            if (changedFiles.some(file => file.endsWith('.md') || file.startsWith('docs/'))) {
+              // 문서 담당자를 여기에 추가 (실제 GitHub 사용자명으로 변경)
+              // reviewers.push('docs-maintainer');
+            }
+            
+            // PR 작성자를 assignee로 추가
+            assignees.push(context.payload.pull_request.user.login);
+            
+            // 리뷰어 할당
+            if (reviewers.length > 0) {
+              await github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                reviewers: reviewers
+              });
+            }
+            
+            // Assignee 할당
+            if (assignees.length > 0) {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                assignees: assignees
+              });
+            }
+
+  pr-labeler:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto label PR
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const labels = [];
+            
+            // PR 제목에 따른 라벨링
+            const title = context.payload.pull_request.title.toLowerCase();
+            
+            if (title.includes('feat:') || title.includes('feature')) {
+              labels.push('enhancement');
+            }
+            if (title.includes('fix:') || title.includes('bugfix')) {
+              labels.push('bug');
+            }
+            if (title.includes('docs:') || title.includes('documentation')) {
+              labels.push('documentation');
+            }
+            if (title.includes('test:')) {
+              labels.push('test');
+            }
+            if (title.includes('refactor:')) {
+              labels.push('refactor');
+            }
+            if (title.includes('chore:')) {
+              labels.push('chore');
+            }
+            
+            // 변경된 파일에 따른 라벨링
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+            
+            const changedFiles = files.map(file => file.filename);
+            
+            if (changedFiles.some(file => file.startsWith('backend/'))) {
+              labels.push('backend');
+            }
+            if (changedFiles.some(file => file.startsWith('frontend/'))) {
+              labels.push('frontend');
+            }
+            if (changedFiles.some(file => file.endsWith('.py'))) {
+              labels.push('python');
+            }
+            if (changedFiles.some(file => file.endsWith('.js') || file.endsWith('.jsx'))) {
+              labels.push('javascript');
+            }
+            if (changedFiles.some(file => file.endsWith('.md'))) {
+              labels.push('documentation');
+            }
+            
+            // PR 크기에 따른 라벨링
+            const additions = context.payload.pull_request.additions;
+            const deletions = context.payload.pull_request.deletions;
+            const totalChanges = additions + deletions;
+            
+            if (totalChanges < 10) {
+              labels.push('size/XS');
+            } else if (totalChanges < 30) {
+              labels.push('size/S');
+            } else if (totalChanges < 100) {
+              labels.push('size/M');
+            } else if (totalChanges < 500) {
+              labels.push('size/L');
+            } else {
+              labels.push('size/XL');
+            }
+            
+            // 라벨 적용
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: labels
+              });
+            }
+
+  pr-code-review-request:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'
+    steps:
+      - name: Request code review
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // 코드 리뷰 요청 댓글 추가
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🔍 **코드 리뷰 요청**
+              
+              이 PR에 대한 코드 리뷰를 요청합니다.
+              
+              ## 리뷰 포인트
+              - 코드 품질 및 가독성
+              - 테스트 커버리지
+              - 성능 영향도
+              - 보안 이슈
+              - 아키텍처 준수
+              
+              리뷰어분들께서는 가능한 시간에 리뷰 부탁드립니다! 🙏`
+            });
+            
+            // Draft PR이 아닌 경우에만 리뷰 요청
+            if (!context.payload.pull_request.draft) {
+              // 여기에 기본 리뷰어들을 추가할 수 있습니다
+              // const defaultReviewers = ['reviewer1', 'reviewer2'];
+              // 
+              // if (defaultReviewers.length > 0) {
+              //   await github.rest.pulls.requestReviewers({
+              //     owner: context.repo.owner,
+              //     repo: context.repo.repo,
+              //     pull_number: context.issue.number,
+              //     reviewers: defaultReviewers
+              //   });
+              // }
+            } 

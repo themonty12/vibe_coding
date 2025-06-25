@@ -9,9 +9,9 @@ updates:
       time: "09:00"
     target-branch: "develop"
     reviewers:
-      - "your-github-username"  # 실제 GitHub 사용자명으로 변경
+      - "themonty12"
     assignees:
-      - "your-github-username"  # 실제 GitHub 사용자명으로 변경
+      - "themonty12"
     labels:
       - "dependencies"
       - "python"
@@ -33,9 +33,9 @@ updates:
       time: "09:00"
     target-branch: "develop"
     reviewers:
-      - "your-github-username"  # 실제 GitHub 사용자명으로 변경
+      - "themonty12"
     assignees:
-      - "your-github-username"  # 실제 GitHub 사용자명으로 변경
+      - "themonty12"
     labels:
       - "dependencies"
       - "backend"
@@ -55,9 +55,9 @@ updates:
       time: "09:00"
     target-branch: "develop"
     reviewers:
-      - "your-github-username"  # 실제 GitHub 사용자명으로 변경
+      - "themonty12"
     assignees:
-      - "your-github-username"  # 실제 GitHub 사용자명으로 변경
+      - "themonty12"
     labels:
       - "dependencies"
       - "frontend"
@@ -77,9 +77,9 @@ updates:
       time: "09:00"
     target-branch: "develop"
     reviewers:
-      - "your-github-username"  # 실제 GitHub 사용자명으로 변경
+      - "themonty12"
     assignees:
-      - "your-github-username"  # 실제 GitHub 사용자명으로 변경
+      - "themonty12"
     labels:
       - "dependencies"
       - "github-actions"

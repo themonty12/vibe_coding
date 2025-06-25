@@ -1,5 +1,10 @@
 """
 Streamlit 프론트엔드 애플리케이션
+
+PR 테스트: GitHub Actions 자동화 확인
+- 자동 라벨링 테스트
+- 자동 댓글 기능 테스트
+- PR 크기 분류 테스트
 """
 import streamlit as st
 import requests
